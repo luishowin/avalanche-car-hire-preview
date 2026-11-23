@@ -27,12 +27,14 @@ function refresh() {
   let visible = 0;
   for (const card of document.querySelectorAll(".card")) {
     card.hidden =
-      !card.dataset.services.split(" ").includes(trip.service) ||
+      (card.dataset.services && !card.dataset.services.split(" ").includes(trip.service)) ||
       Boolean(category && card.dataset.category !== category);
     if (!card.hidden) visible++;
-    const price = card.querySelector("[data-self]"),
-      rate = price.dataset[trip.service];
-    price.textContent = rate + (rate === "Request a quote" ? "" : " / day");
+    const price = card.querySelector("[data-self]");
+    if (price) {
+      const rate = price.dataset[trip.service];
+      price.textContent = rate + (rate === "Request a quote" ? "" : " / day");
+    }
     for (const a of card.querySelectorAll("a"))
       a.href =
         base + "fleet/" + card.dataset.slug + "/?" + new URLSearchParams(trip);
@@ -54,7 +56,7 @@ document.querySelectorAll("[data-filter]").forEach(
 );
 if (form) {
   const f = form.elements;
-  const supported = car?.dataset.services.split(" ") || ["self", "driver"];
+  const supported = car?.dataset.services ? car.dataset.services.split(" ") : ["self", "driver"];
   if (!supported.includes(trip.service)) trip.service = supported[0];
   for (const input of f.service) {
     input.checked = input.value === trip.service;

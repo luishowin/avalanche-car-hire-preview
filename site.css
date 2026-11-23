@@ -541,6 +541,10 @@ footer {
   gap: 36px;
   margin: 24px 0 40px;
 }
+.car-view.no-photo {
+  display: block;
+  max-width: 66ch;
+}
 .car-view img {
   width: 100%;
   border-radius: 14px;
