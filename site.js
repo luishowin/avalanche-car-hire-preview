@@ -138,5 +138,48 @@ if (form) {
   };
 }
 refresh();
+// Progressive enhancement: content stays visible without JS or animation support.
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+if (!reducedMotion.matches && "IntersectionObserver" in window && Element.prototype.animate) {
+  const animations = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    let stagger = 0;
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const element = entry.target;
+      observer.unobserve(element);
+      if (element.contains(document.activeElement)) continue;
+      const animation = element.animate(
+        [
+          { opacity: 0, transform: "translateY(20px)" },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
+        {
+          duration: 480,
+          delay: Math.min(stagger++ * 80, 240),
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "backwards",
+        },
+      );
+      animations.add(animation);
+      const cleanup = () => animations.delete(animation);
+      animation.onfinish = cleanup;
+      animation.oncancel = cleanup;
+    }
+  }, { threshold: 0.08 });
+  document.querySelectorAll(
+    ".card, .steps > li, .section-head, .inner > h1, .car-view, .panel",
+  ).forEach((element) => observer.observe(element));
+  // Never obscure a keyboard-focused control or ignore a changed motion preference.
+  document.addEventListener("focusin", () => {
+    for (const animation of animations)
+      if (animation.effect.target.contains(document.activeElement)) animation.finish();
+  });
+  reducedMotion.addEventListener("change", (event) => {
+    if (!event.matches) return;
+    observer.disconnect();
+    for (const animation of animations) animation.cancel();
+  });
+}
 if ("serviceWorker" in navigator && isSecureContext)
   navigator.serviceWorker.register(base + "sw.js").catch(() => {});
