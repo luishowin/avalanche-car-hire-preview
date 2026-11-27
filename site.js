@@ -140,6 +140,102 @@ if (form) {
 refresh();
 // Progressive enhancement: content stays visible without JS or animation support.
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const mobileViewport = window.matchMedia("(max-width: 900px)");
+const menu = document.querySelector(".mobile-menu");
+if (menu) {
+  const trigger = menu.querySelector("summary");
+  const navigation = menu.querySelector("nav");
+  const header = menu.closest("header");
+  const background = [...document.querySelectorAll("main, footer, .head > .brand, .head > .contact")];
+  let previousFocus;
+  let closing = false;
+  let scrollY = 0;
+  let locked = false;
+  const inertState = new Map();
+  function syncMenu() {
+    const open = menu.open && mobileViewport.matches;
+    trigger.setAttribute("aria-expanded", String(open));
+    trigger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    if (open === locked) return;
+    locked = open;
+    if (open) {
+      previousFocus = document.activeElement;
+      scrollY = window.scrollY;
+      document.body.style.top = `-${scrollY}px`;
+      document.body.classList.add("menu-open");
+      header.classList.add("menu-active");
+      menu.setAttribute("role", "dialog");
+      menu.setAttribute("aria-label", "Mobile navigation");
+      menu.setAttribute("aria-modal", "true");
+      for (const element of background) {
+        inertState.set(element, element.inert);
+        element.inert = true;
+      }
+      trigger.focus();
+    } else {
+      document.body.classList.remove("menu-open");
+      document.body.style.top = "";
+      header.classList.remove("menu-active");
+      menu.removeAttribute("role");
+      menu.removeAttribute("aria-label");
+      menu.removeAttribute("aria-modal");
+      for (const [element, inert] of inertState) element.inert = inert;
+      inertState.clear();
+      window.scrollTo(0, scrollY);
+      previousFocus?.focus({ preventScroll: true });
+    }
+  }
+  async function closeMenu() {
+    if (closing || !menu.open) return;
+    closing = true;
+    menu.classList.add("is-closing");
+    if (!reducedMotion.matches && navigation.animate) {
+      const animation = navigation.animate(
+        [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-16px)" }],
+        { duration: 200, easing: "ease-in", fill: "forwards" },
+      );
+      await animation.finished.catch(() => {});
+      animation.cancel();
+    }
+    menu.open = false;
+    menu.classList.remove("is-closing");
+    closing = false;
+    syncMenu();
+  }
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (menu.open) closeMenu();
+    else {
+      menu.open = true;
+      syncMenu();
+    }
+  });
+  menu.addEventListener("toggle", syncMenu);
+  navigation.addEventListener("click", (event) => {
+    if (event.target.closest("a")) closeMenu();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (!locked) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu();
+    }
+    if (event.key !== "Tab") return;
+    const controls = [trigger, ...navigation.querySelectorAll("a[href]")];
+    const index = controls.indexOf(document.activeElement);
+    if (event.shiftKey && index <= 0) {
+      event.preventDefault();
+      controls.at(-1).focus();
+    } else if (!event.shiftKey && (index === controls.length - 1 || index === -1)) {
+      event.preventDefault();
+      trigger.focus();
+    }
+  });
+  mobileViewport.addEventListener("change", () => {
+    if (!mobileViewport.matches) menu.open = false;
+    syncMenu();
+  });
+}
 if (!reducedMotion.matches && "IntersectionObserver" in window && Element.prototype.animate) {
   const animations = new Set();
   const observer = new IntersectionObserver((entries) => {
@@ -148,6 +244,7 @@ if (!reducedMotion.matches && "IntersectionObserver" in window && Element.protot
       if (!entry.isIntersecting) continue;
       const element = entry.target;
       observer.unobserve(element);
+      if (element.matches(".card") && mobileViewport.matches) continue;
       if (element.contains(document.activeElement)) continue;
       const animation = element.animate(
         [
