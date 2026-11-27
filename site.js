@@ -1,4 +1,10 @@
 import { tripError, message } from "./trip.js";
+document.querySelectorAll("[data-demo-submit]").forEach((button) => {
+  button.addEventListener("click", () => {
+    button.closest(".signup-fields").querySelector(":scope > .signup-result").textContent =
+      "Demo only: no information was submitted or saved, and no account was created.";
+  });
+});
 const base = new URL(".", import.meta.url).pathname;
 const key = base + "avalanche.trip",
   params = new URLSearchParams(location.search);

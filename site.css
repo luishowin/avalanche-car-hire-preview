@@ -301,11 +301,12 @@ header {
   font-size: 0.9rem;
   letter-spacing: 0;
   line-height: 1.2;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 .head > .header-brand img {
   width: auto;
-  height: 16px;
+  height: 11px;
 }
 .brand small {
   display: block;
@@ -646,7 +647,7 @@ header {
   flex-wrap: wrap;
   gap: 18px 28px;
   padding: 0;
-  margin: 4px 0;
+  margin: 28px 0 0;
   list-style: none;
   color: #394458;
   font-size: 0.875rem;
@@ -962,6 +963,130 @@ h2 {
 .prose .textlink {
   margin-top: 10px;
 }
+.about-contact {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.about-contact p {
+  max-width: 66ch;
+  margin-block: 16px;
+  line-height: 1.6;
+}
+.signup {
+  max-width: 760px;
+}
+.signup .safari-eyebrow {
+  margin-top: 36px;
+}
+.signup-intro {
+  max-width: 65ch;
+}
+.signup-notice {
+  margin: 28px 0;
+  padding: 16px 18px;
+  border-left: 3px solid var(--amber);
+  background: #faf8ef;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.signup-options {
+  display: grid;
+  gap: 12px;
+}
+.signup-option {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+.signup-option > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  list-style: none;
+}
+.signup-option > summary::-webkit-details-marker {
+  display: none;
+}
+.signup-option > summary strong,
+.signup-option > summary span span {
+  display: block;
+}
+.signup-option > summary strong {
+  font-size: 1.1rem;
+}
+.signup-option > summary span span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.signup-option[open] > summary .ic {
+  transform: rotate(90deg);
+}
+.signup-fields {
+  display: grid;
+  gap: 16px;
+  padding: 0 22px 22px;
+}
+.signup-fields label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+.signup-fields input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+.signup-fields button {
+  justify-self: start;
+}
+.signup-result {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.signup-result:empty {
+  display: none;
+}
+.signup-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.signup-signin summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid #c8c8c3;
+  border-radius: 9px;
+  background: white;
+  list-style: none;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+.signup-signin summary::-webkit-details-marker {
+  display: none;
+}
+.signup-signin summary .ic {
+  width: 17px;
+}
+.signup-signin[open] summary .ic {
+  transform: rotate(90deg);
+}
+.signup-signin .signup-fields {
+  padding: 8px 0 0;
+  min-width: min(300px, 100%);
+}
 .crumb {
   font-size: 0.85rem;
 }
@@ -1132,7 +1257,7 @@ pre {
   }
   .head > .header-brand img {
     width: auto;
-    height: 16px;
+    height: 11px;
   }
   .head > nav {
     display: none;
@@ -1253,7 +1378,7 @@ pre {
     text-align: left;
   }
   .fleet-benefits {
-    display: none;
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 14px;
     width: 100%;
